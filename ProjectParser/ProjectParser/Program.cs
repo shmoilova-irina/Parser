@@ -15,13 +15,23 @@ namespace ProjectParser
 
             using (StreamReader sr = new StreamReader(file_name))
             {
-                Console.WriteLine(sr.ReadToEnd());
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.Contains("Error"))
+                    {
+                        Console.WriteLine(line);
+                        Console.WriteLine("=====================================================================");
+                    }
+                } 
             }
         }
+     
 
         static void Main(string[] args)
         {
             Read();
+            Console.ReadLine();
         }
     }
 }
