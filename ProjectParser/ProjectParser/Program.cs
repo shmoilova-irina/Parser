@@ -19,19 +19,22 @@ namespace ProjectParser
                 Read(folder_path + "\\" + f.Name, pattern);
             }
         }
-        
+
         static void Read(string file_name, string pattern)
         {
+            int lines_read = 0;
+            int finds_line = 0;
             using (StreamReader sr = new StreamReader(file_name))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
+                    lines_read++;
                     if (Regex.IsMatch(line, pattern, RegexOptions.IgnoreCase))
                     {
+                        finds_line++;
                         Write("D://C#//Parser//result.txt", line);
-                        Console.WriteLine(line);
-                        Console.WriteLine("=====================================================================");
+                        Console.WriteLine($"Прочитано строк {lines_read}, найдено соответствий в строках {finds_line}");
                     }
                 } 
             }
@@ -41,7 +44,7 @@ namespace ProjectParser
 
         static void Write(string file_new, string line)
         {
-            using (FileStream fstream = new FileStream(file_new, FileMode.OpenOrCreate))
+            using (FileStream fstream = new FileStream(file_new, FileMode.Create))
             {
                 byte[] array = System.Text.Encoding.Default.GetBytes(line + "\n");
                 fstream.Position = index_wrire;
