@@ -11,7 +11,7 @@ namespace ProjectParser
     {
         static void Read(string file_name, string find_word)
         {
-            // string file_name = "D:\\C#\\Parser";
+            // string file_name = "D:\\C#\\Parser\\fev.txt";
             using (StreamReader sr = new StreamReader(file_name))
             {
                 string line;
@@ -19,13 +19,13 @@ namespace ProjectParser
                 {
                     if (line.Contains(find_word))
                     {
+                        Write("D://C#//Parser//result.txt", line);
                         Console.WriteLine(line);
                         Console.WriteLine("=====================================================================");
                     }
                 } 
             }
         }
-
 
         static void Find_files(string find_word)
         {
@@ -36,7 +36,19 @@ namespace ProjectParser
             {
                 Console.WriteLine(f.Name);
                 Read(folder_path + "\\" + f.Name, find_word);
+            }
+        }
 
+        static int index_wrire = 0;
+
+        static void Write(string file_new, string line)
+        {
+            using (FileStream fstream = new FileStream(file_new, FileMode.OpenOrCreate))
+            {
+                byte[] array = System.Text.Encoding.Default.GetBytes(line + "\n");
+                fstream.Position = index_wrire;
+                fstream.Write(array, 0, array.Length);
+                index_wrire += array.Length;
             }
         }
 
