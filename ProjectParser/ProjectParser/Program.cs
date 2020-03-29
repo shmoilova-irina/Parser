@@ -9,7 +9,7 @@ namespace ProjectParser
 {
     class Program
     {
-        static void Read(string file_name)
+        static void Read(string file_name, string find_word)
         {
             // string file_name = "D:\\C#\\Parser";
             using (StreamReader sr = new StreamReader(file_name))
@@ -17,7 +17,7 @@ namespace ProjectParser
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    if (line.Contains("Error"))
+                    if (line.Contains(find_word))
                     {
                         Console.WriteLine(line);
                         Console.WriteLine("=====================================================================");
@@ -27,7 +27,7 @@ namespace ProjectParser
         }
 
 
-        static void Find_files()
+        static void Find_files(string find_word)
         {
             string folder_path = "D:\\C#\\Parser";
             DirectoryInfo d = new DirectoryInfo(folder_path);
@@ -35,15 +35,17 @@ namespace ProjectParser
             foreach (FileInfo f in d.GetFiles("*.log"))
             {
                 Console.WriteLine(f.Name);
-                Read(folder_path + "\\" + f.Name);
+                Read(folder_path + "\\" + f.Name, find_word);
 
             }
         }
 
         static void Main(string[] args)
         {
-            Find_files();
-            Console.ReadLine();
+            foreach (string arg in args)
+            {
+                Find_files(arg);
+            }
         }
     }
 }
