@@ -9,9 +9,18 @@ namespace ProjectParser
 {
     class Program
     {
+        static void Find_files(string folder_path, string find_word)
+        {
+            DirectoryInfo d = new DirectoryInfo(folder_path);
+            foreach (FileInfo f in d.GetFiles("*.log"))
+            {
+                Console.WriteLine(f.Name);
+                Read(folder_path + "\\" + f.Name, find_word);
+            }
+        }
+
         static void Read(string file_name, string find_word)
         {
-            // string file_name = "D:\\C#\\Parser\\fev.txt";
             using (StreamReader sr = new StreamReader(file_name))
             {
                 string line;
@@ -24,18 +33,6 @@ namespace ProjectParser
                         Console.WriteLine("=====================================================================");
                     }
                 } 
-            }
-        }
-
-        static void Find_files(string find_word)
-        {
-            string folder_path = "D:\\C#\\Parser";
-            DirectoryInfo d = new DirectoryInfo(folder_path);
-
-            foreach (FileInfo f in d.GetFiles("*.log"))
-            {
-                Console.WriteLine(f.Name);
-                Read(folder_path + "\\" + f.Name, find_word);
             }
         }
 
@@ -54,9 +51,26 @@ namespace ProjectParser
 
         static void Main(string[] args)
         {
-            foreach (string arg in args)
+            if (args.Length < 2)
             {
-                Find_files(arg);
+                Console.Write("Укажите файл/папку для распарса и слова, которые нужно искать, через пробел");
+                return;
+            }
+
+            string ext = Path.GetExtension(args[0]);
+            if (ext != null && ext.Length > 0)
+            {
+                for (int i = 1; i < args.Length; i++)
+                {
+                    Read(args[0], args[i]);
+                }
+            }
+            else
+            {
+                for (int i = 1; i < args.Length; i++)
+                {
+                    Find_files(args[0], args[i]);
+                }
             }
         }
     }
