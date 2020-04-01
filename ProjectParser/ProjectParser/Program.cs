@@ -10,13 +10,23 @@ namespace ProjectParser
 {
     class Program
     {
+        static string[] log_types = new string[] { "*.log", "*.txt", ""};
+        static string result_perfix = "_result.txt";
+
         static void Find_files(string folder_path, string pattern)
         {
             DirectoryInfo d = new DirectoryInfo(folder_path);
-            foreach (FileInfo f in d.GetFiles("*.log"))
+            foreach (string file_exist in log_types)
             {
-                Console.WriteLine(f.Name);
-                Read(folder_path + "\\" + f.Name, pattern);
+                foreach (FileInfo f in d.GetFiles(file_exist))
+                {
+                    if (f.Name.Contains(result_perfix))
+                    {
+                        continue;
+                    }
+                    Console.WriteLine("Start read: " + f.Name);
+                    Read(folder_path + f.Name, pattern);
+                }
             }
         }
 
@@ -33,23 +43,23 @@ namespace ProjectParser
                     if (Regex.IsMatch(line, pattern, RegexOptions.IgnoreCase))
                     {
                         finds_line++;
-                        Write("D://C#//Parser//result.txt", line);
+                        Write(file_name + result_perfix, line);
                         Console.WriteLine($"Прочитано строк {lines_read}, найдено соответствий в строках {finds_line}");
                     }
                 } 
             }
         }
 
-        static int index_wrire = 0;
+        static int index_write = 0;
 
         static void Write(string file_new, string line)
         {
             using (FileStream fstream = new FileStream(file_new, FileMode.Create))
             {
-                byte[] array = System.Text.Encoding.Default.GetBytes(line + "\n");
-                fstream.Position = index_wrire;
-                fstream.Write(array, 0, array.Length);
-                index_wrire += array.Length;
+                using (StreamWriter sw = new StreamWriter(fstream, Encoding.ASCII))
+                {
+                    sw.WriteLine(line);
+                }
             }
         }
 
@@ -60,20 +70,20 @@ namespace ProjectParser
                 Console.Write("Укажите файл/папку для распарса и слова, которые нужно искать, через пробел");
                 return;
             }
-
-            string ext = Path.GetExtension(args[0]);
-            if (ext != null && ext.Length > 0)
+            string file_or_path = args[0];
+            string last_symbol = file_or_path.Substring(file_or_path.Length-1);
+            if (last_symbol == "/" || last_symbol == "\\")
             {
                 for (int i = 1; i < args.Length; i++)
                 {
-                    Read(args[0], args[i]);
+                    Find_files(file_or_path, args[i]);
                 }
             }
             else
             {
                 for (int i = 1; i < args.Length; i++)
                 {
-                    Find_files(args[0], args[i]);
+                    Read(file_or_path, args[i]);
                 }
             }
         }
