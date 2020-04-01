@@ -36,33 +36,26 @@ namespace ProjectParser
             int finds_line = 0;
             using (StreamReader sr = new StreamReader(file_name))
             {
-                string line;
-                while ((line = sr.ReadLine()) != null)
+                using (FileStream fstream = new FileStream(file_name + result_perfix, FileMode.OpenOrCreate))
                 {
-                    lines_read++;
-                    if (Regex.IsMatch(line, pattern, RegexOptions.IgnoreCase))
+                    using (StreamWriter sw = new StreamWriter(fstream, Encoding.ASCII))
                     {
-                        finds_line++;
-                        Write(file_name + result_perfix, line);
-                        Console.WriteLine($"Прочитано строк {lines_read}, найдено соответствий в строках {finds_line}");
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            lines_read++;
+                            if (Regex.IsMatch(line, pattern, RegexOptions.IgnoreCase))
+                            {
+                                finds_line++;
+                                sw.WriteLine(line);
+                                Console.WriteLine($"Прочитано строк {lines_read}, найдено соответствий в строках {finds_line}");
+                            }
+                        }
                     }
-                } 
-            }
-        }
-
-        static int index_write = 0;
-
-        static void Write(string file_new, string line)
-        {
-            using (FileStream fstream = new FileStream(file_new, FileMode.Create))
-            {
-                using (StreamWriter sw = new StreamWriter(fstream, Encoding.ASCII))
-                {
-                    sw.WriteLine(line);
                 }
             }
         }
-
+        
         static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -72,18 +65,17 @@ namespace ProjectParser
             }
             string file_or_path = args[0];
             string last_symbol = file_or_path.Substring(file_or_path.Length-1);
-            if (last_symbol == "/" || last_symbol == "\\")
+            bool isFolder = last_symbol == "/" || last_symbol == "\\";
+            for (int i = 1; i < args.Length; i++)
             {
-                for (int i = 1; i < args.Length; i++)
+                string find_word = args[i];
+                if (isFolder)
                 {
-                    Find_files(file_or_path, args[i]);
+                    Find_files(file_or_path, find_word);
                 }
-            }
-            else
-            {
-                for (int i = 1; i < args.Length; i++)
+                else
                 {
-                    Read(file_or_path, args[i]);
+                    Read(file_or_path, find_word);
                 }
             }
         }
